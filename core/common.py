@@ -1354,6 +1354,7 @@ class ConfigHandler:
             'format_on_unique': settings.get('format_on_unique', {}),  # @deprecated
             'auto_format': settings.get('auto_format', {}),
             'selection_formatting': settings.get('selection_formatting', True),
+            'graphic_save_path': settings.get('graphic_save_path', ''),
             'formatters': settings.get('formatters', {})
         }
         c['formatters'].pop('examplegeneric', None)
@@ -1743,8 +1744,31 @@ class PhantomHandler:
 
     @staticmethod
     def get_downloads_folder():
+        # 1. User-configured override
+        custom = OptionHandler.query(CONFIG, '', 'graphic_save_path')
+        if custom:
+            custom = expandvars(expanduser(custom))
+            if not isdir(custom):
+                try:
+                    os.makedirs(custom, exist_ok=True)
+                except Exception:
+                    custom = None
+            if custom and isdir(custom):
+                return custom
+
+        # 2. Platform-native Downloads folder
         if IS_WINDOWS:
-            downloads_folder = join(os.getenv('USERPROFILE', ''), 'Downloads')
+            downloads_folder = None
+            try:
+                import winreg
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                    r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders') as key:
+                    downloads_folder = expandvars(winreg.QueryValueEx(key, '{374DE290-123F-4565-9164-39C4925E467B}')[0])
+            except Exception:
+                pass
+
+            if not downloads_folder or not isdir(downloads_folder):
+                downloads_folder = join(os.getenv('USERPROFILE', ''), 'Downloads')
         else:
             downloads_folder = join(os.getenv('HOME', ''), 'Downloads')
 

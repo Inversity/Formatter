@@ -57,6 +57,18 @@
         "sync_scroll": true
     },
 
+    // Directory for saving rendered graphic images (e.g., "Save PNG" button).
+    // This must be an absolute path or use environment variables.
+    // On Windows, you can use either escaped backslashes (e.g., "C:\\a\\b\\c") or
+    // forward slashes (e.g., "C:/a/b/c") as path separators.
+    // Environment variables (e.g., "%USERPROFILE%\\Pictures") and
+    // user home shorthand (e.g., "~/Pictures") are supported.
+    // Note: Sublime Text variables (e.g., $file_path, $packages) are NOT supported.
+    // The directory will be created automatically if it does not exist.
+    // Leave empty to use the system Downloads folder.
+    // On Windows, this respects relocated shell folders (e.g., moved Downloads).
+    "graphic_save_path": "",
+
     // A set of directories where executable programs are located.
     // These can be absolute paths to module directories or Python zipfiles.
     // Any environment variables like PATH, PYTHONPATH, GEM_PATH, GOPATH,
